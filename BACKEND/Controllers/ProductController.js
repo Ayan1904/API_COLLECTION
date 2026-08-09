@@ -358,6 +358,23 @@ const deleteProduct = async (req, res, next) => {
   }
 };
 
+// ─── @route   GET /api/products/my-listings ──────────────────────────────────
+// ─── @access  Private — provider only (or any user who has created listings)
+const getMyProducts = async (req, res, next) => {
+  try {
+    const products = await Product.find({ createdBy: req.user._id })
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      products,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
@@ -365,5 +382,6 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getCategories,
+  getMyProducts,
   seedProducts,
 };

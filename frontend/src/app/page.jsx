@@ -10,7 +10,8 @@ import {
   Terminal, 
   Star, 
   TrendingUp, 
-  Lock 
+  Lock,
+  Plus
 } from 'lucide-react';
 
 // Sample API Data
@@ -76,7 +77,6 @@ const APIS = [
     price: "Paid"
   }
 ];
-
 const CATEGORIES = ["All", "Finance", "Machine Learning", "Security", "Mapping & Data", "Communication"];
 
 export default function ApiMarketplaceHome() {
@@ -84,6 +84,7 @@ export default function ApiMarketplaceHome() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [mounted, setMounted] = useState(false);
   const [user, setUser] = useState(null);
+  const [apis, setApis] = useState(APIS);
 
   useEffect(() => {
     setMounted(true);
@@ -97,8 +98,32 @@ export default function ApiMarketplaceHome() {
     }
   }, []);
 
+  useEffect(() => {
+    const fetchApis = async () => {
+      try {
+        const queryParams = new URLSearchParams();
+        if (selectedCategory && selectedCategory !== 'All') {
+          queryParams.append('category', selectedCategory);
+        }
+        if (searchTerm) {
+          queryParams.append('search', searchTerm);
+        }
+        const res = await fetch(`http://localhost:5000/api/products?${queryParams.toString()}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.products) {
+            setApis(data.products);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch APIs", err);
+      }
+    };
+    fetchApis();
+  }, [searchTerm, selectedCategory]);
+
   // Filter APIs based on search input & category
-  const filteredApis = APIS.filter(api => {
+  const filteredApis = apis.filter(api => {
     const matchesSearch = api.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           api.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'All' || api.category === selectedCategory;
@@ -132,6 +157,18 @@ export default function ApiMarketplaceHome() {
                 <span className="text-xs text-slate-300 font-medium bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
                   Logged in as <span className="text-teal-400 font-semibold">{user.fullName}</span>
                 </span>
+                <a
+                  href="/subscriptions"
+                  className="text-xs text-slate-300 hover:text-white border border-slate-850 hover:border-slate-700 px-3 py-1.5 rounded-lg transition-all font-medium"
+                >
+                  My Subscriptions
+                </a>
+                <a
+                  href="/add-api"
+                  className="flex items-center gap-1.5 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-500 px-3 py-1.5 rounded-lg transition-all shadow-md shadow-teal-600/20"
+                >
+                  <Plus className="h-3.5 w-3.5" /> Publish API
+                </a>
                 <button
                   onClick={() => {
                     localStorage.removeItem('token');
@@ -247,7 +284,7 @@ export default function ApiMarketplaceHome() {
           {filteredApis.length > 0 ? (
             filteredApis.map(api => (
               <div 
-                key={api.id} 
+                key={api._id || api.id} 
                 className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-6 hover:border-slate-700 transition-all flex flex-col justify-between group"
               >
                 <div>
@@ -292,9 +329,12 @@ export default function ApiMarketplaceHome() {
                     </div>
                   </div>
 
-                  <button className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-teal-600 text-slate-200 hover:text-white py-2 rounded-lg text-xs font-medium transition-all">
+                  <a 
+                    href={`/apidetails/${api._id || api.id}`}
+                    className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-teal-600 text-slate-200 hover:text-white py-2 rounded-lg text-xs font-medium transition-all"
+                  >
                     Connect API <ArrowRight className="h-3.5 w-3.5" />
-                  </button>
+                  </a>
                 </div>
               </div>
             ))

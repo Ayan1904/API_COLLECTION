@@ -12,6 +12,7 @@ const connectDB = require('./Config/db');
 const { seedProducts } = require('./Controllers/ProductController');
 const userRoutes = require('./Routers/UserRouter');
 const productRoutes = require('./Routers/ProductRouter');
+const subscriptionRoutes = require('./Routers/SubscriptionRouter');
 const { notFound, errorHandler } = require('./Middleware/errorMiddleware');
 
 // ─── Connect to MongoDB ───────────────────────────────────────────────────────
@@ -45,6 +46,7 @@ app.get('/', (req, res) => {
     endpoints: {
       users: '/api/users',
       products: '/api/products',
+      subscriptions: '/api/subscriptions',
     },
   });
 });
@@ -52,6 +54,7 @@ app.get('/', (req, res) => {
 // ─── API Routes ───────────────────────────────────────────────────────────────
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
 
 // ─── Error Handling (must be last) ───────────────────────────────────────────
 app.use(notFound);

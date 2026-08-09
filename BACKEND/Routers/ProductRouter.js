@@ -8,6 +8,7 @@ const {
   updateProduct,
   deleteProduct,
   getCategories,
+  getMyProducts,
 } = require('../Controllers/ProductController');
 
 // ─── Public Routes ─────────────────────────────────────────────────────────────
@@ -16,6 +17,9 @@ router.get('/', getAllProducts);
 
 // GET /api/products/categories    — list all distinct categories
 router.get('/categories', getCategories);
+
+// GET /api/products/my-listings   — list all listings created by current logged in user (must be before /:id)
+router.get('/my-listings', protect, getMyProducts);
 
 // GET /api/products/:id           — get single API listing by ID
 router.get('/:id', getProductById);
