@@ -2,6 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
+const dns = require('node:dns/promises');
+dns.setServers(['8.8.8.8', '8.8.4.4']);
+
 // Load env vars first — must be before any module that reads process.env
 dotenv.config();
 

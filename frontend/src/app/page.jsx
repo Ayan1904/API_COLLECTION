@@ -1,5 +1,5 @@
 'use client'; 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Search, 
   Code2, 
@@ -82,6 +82,20 @@ const CATEGORIES = ["All", "Finance", "Machine Learning", "Security", "Mapping &
 export default function ApiMarketplaceHome() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [mounted, setMounted] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    setMounted(true);
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }, []);
 
   // Filter APIs based on search input & category
   const filteredApis = APIS.filter(api => {
@@ -97,42 +111,64 @@ export default function ApiMarketplaceHome() {
       <nav className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="bg-indigo-600 p-2 rounded-lg text-white">
+            <div className="bg-teal-600 p-2 rounded-lg text-white">
               <Code2 className="h-5 w-5" />
             </div>
             <span className="font-bold text-xl tracking-tight text-white">APIHub</span>
           </div>
 
           <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-300">
-            <a href="#explore" className="hover:text-indigo-400 transition-colors">Explore APIs</a>
-            <a href="#features" className="hover:text-indigo-400 transition-colors">Features</a>
-            <a href="#docs" className="hover:text-indigo-400 transition-colors">Documentation</a>
-            <a href="#pricing" className="hover:text-indigo-400 transition-colors">Pricing</a>
+            <a href="#explore" className="hover:text-teal-400 transition-colors">Explore APIs</a>
+            <a href="#features" className="hover:text-teal-400 transition-colors">Features</a>
+            <a href="#docs" className="hover:text-teal-400 transition-colors">Documentation</a>
+            <a href="#pricing" className="hover:text-teal-400 transition-colors">Pricing</a>
           </div>
 
           <div className="flex items-center space-x-4">
-            <button className="text-sm text-slate-300 hover:text-white font-medium px-3 py-2">
-              Sign In
-            </button>
-            <button className="text-sm bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg transition-all shadow-lg shadow-indigo-600/20">
-              Publish API
-            </button>
+            {!mounted ? (
+              <div className="w-20 h-8" />
+            ) : user ? (
+              <div className="flex items-center space-x-3">
+                <span className="text-xs text-slate-300 font-medium bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
+                  Logged in as <span className="text-teal-400 font-semibold">{user.fullName}</span>
+                </span>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    setUser(null);
+                    window.location.reload();
+                  }}
+                  className="text-xs text-slate-400 hover:text-white border border-slate-800 hover:border-slate-700 px-3 py-1.5 rounded-lg transition-all cursor-pointer font-medium"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <>
+                <a href="/login" className="text-sm text-slate-300 hover:text-white font-medium px-3 py-2">
+                  Sign In
+                </a>
+                <a href="/signup" className="text-sm bg-teal-600 hover:bg-teal-500 text-white font-semibold px-4 py-2 rounded-lg transition-all shadow-lg shadow-teal-600/20">
+                  Get Started
+                </a>
+              </>
+            )}
           </div>
         </div>
       </nav>
 
       {/* 2. Hero Section */}
       <section className="relative pt-20 pb-16 px-6 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/30 via-slate-950 to-slate-950 -z-10" />
         
         <div className="max-w-4xl mx-auto text-center space-y-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 text-xs font-semibold uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-teal-500/30 bg-teal-500/10 text-teal-400 text-xs font-semibold uppercase tracking-wider">
             <Zap className="h-3.5 w-3.5" /> Next-Gen API Hub
           </div>
 
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
             Discover, Test, and Integrate <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">
+            <span className="text-teal-400">
               Production-Ready APIs
             </span>
           </h1>
@@ -150,9 +186,9 @@ export default function ApiMarketplaceHome() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search APIs by keyword, category, or functionality..."
-                className="w-full pl-12 pr-32 py-4 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-xl"
+                className="w-full pl-12 pr-32 py-4 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all shadow-xl"
               />
-              <button className="absolute right-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-5 py-2 rounded-lg text-sm transition-all">
+              <button className="absolute right-2.5 bg-teal-600 hover:bg-teal-500 text-white font-medium px-5 py-2 rounded-lg text-sm transition-all">
                 Search
               </button>
             </div>
@@ -196,7 +232,7 @@ export default function ApiMarketplaceHome() {
                 onClick={() => setSelectedCategory(category)}
                 className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   selectedCategory === category
-                    ? 'bg-indigo-600 text-white'
+                    ? 'bg-teal-600 text-white'
                     : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
                 }`}
               >
@@ -216,7 +252,7 @@ export default function ApiMarketplaceHome() {
               >
                 <div>
                   <div className="flex items-start justify-between mb-3">
-                    <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-800 text-indigo-400 border border-slate-700/50">
+                    <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-800 text-teal-400 border border-slate-700/50">
                       {api.category}
                     </span>
                     <span className={`text-xs font-semibold px-2 py-0.5 rounded ${
@@ -228,7 +264,7 @@ export default function ApiMarketplaceHome() {
                     </span>
                   </div>
 
-                  <h3 className="text-lg font-bold text-white group-hover:text-indigo-400 transition-colors mb-2">
+                  <h3 className="text-lg font-bold text-white group-hover:text-teal-400 transition-colors mb-2">
                     {api.name}
                   </h3>
                   
@@ -256,7 +292,7 @@ export default function ApiMarketplaceHome() {
                     </div>
                   </div>
 
-                  <button className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-indigo-600 text-slate-200 hover:text-white py-2 rounded-lg text-xs font-medium transition-all">
+                  <button className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-teal-600 text-slate-200 hover:text-white py-2 rounded-lg text-xs font-medium transition-all">
                     Connect API <ArrowRight className="h-3.5 w-3.5" />
                   </button>
                 </div>
@@ -280,7 +316,7 @@ export default function ApiMarketplaceHome() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-slate-900/40 border border-slate-800/80 p-6 rounded-xl">
-              <div className="p-3 bg-indigo-500/10 text-indigo-400 w-fit rounded-lg mb-4">
+              <div className="p-3 bg-teal-500/10 text-teal-400 w-fit rounded-lg mb-4">
                 <Terminal className="h-6 w-6" />
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">Unified API Key</h3>
@@ -316,7 +352,7 @@ export default function ApiMarketplaceHome() {
       <footer className="border-t border-slate-800/80 bg-slate-950 py-12 px-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center space-x-3">
-            <div className="bg-indigo-600 p-1.5 rounded-md text-white">
+            <div className="bg-teal-600 p-1.5 rounded-md text-white">
               <Code2 className="h-4 w-4" />
             </div>
             <span className="font-bold text-slate-200">APIHub</span>

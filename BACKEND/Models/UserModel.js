@@ -49,12 +49,11 @@ const userSchema = new mongoose.Schema(
 );
 
 // ─── Pre-save Hook: Hash Password ─────────────────────────────────────────────
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
   // Only re-hash if the passwordHash field was actually modified
-  if (!this.isModified('passwordHash')) return next();
+  if (!this.isModified('passwordHash')) return;
   const salt = await bcrypt.genSalt(12);
   this.passwordHash = await bcrypt.hash(this.passwordHash, salt);
-  next();
 });
 
 // ─── Instance Method: Compare Password ───────────────────────────────────────

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Code2, 
   Star, 
@@ -114,6 +114,20 @@ export default function ApiDetailPage() {
   const [copied, setCopied] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [testResponse, setTestResponse] = useState(null);
+  const [mounted, setMounted] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    setMounted(true);
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }, []);
 
   // Dynamic code snippet generator
   const getCodeSnippet = () => {
@@ -162,7 +176,7 @@ export default function ApiDetailPage() {
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <a href="/" className="flex items-center space-x-3">
-              <div className="bg-indigo-600 p-2 rounded-lg text-white">
+              <div className="bg-teal-600 p-2 rounded-lg text-white">
                 <Code2 className="h-5 w-5" />
               </div>
               <span className="font-bold text-xl tracking-tight text-white">APIHub</span>
@@ -170,10 +184,33 @@ export default function ApiDetailPage() {
           </div>
 
           <div className="flex items-center space-x-4">
-            <a href="/login" className="text-xs text-slate-300 hover:text-white font-medium">Sign In</a>
-            <button className="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg transition-all shadow-lg shadow-indigo-600/20">
-              Get API Key
-            </button>
+            {!mounted ? (
+              <div className="w-20 h-8" />
+            ) : user ? (
+              <div className="flex items-center space-x-3">
+                <span className="text-xs text-slate-300 font-medium bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
+                  Logged in as <span className="text-teal-400 font-semibold">{user.fullName}</span>
+                </span>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    setUser(null);
+                    window.location.reload();
+                  }}
+                  className="text-xs text-slate-400 hover:text-white border border-slate-800 hover:border-slate-700 px-3 py-1.5 rounded-lg transition-all cursor-pointer font-medium"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <>
+                <a href="/login" className="text-xs text-slate-300 hover:text-white font-medium">Sign In</a>
+                <a href="/signup" className="text-xs bg-teal-600 hover:bg-teal-500 text-white font-semibold px-4 py-2 rounded-lg transition-all shadow-lg shadow-teal-600/20">
+                  Get Started
+                </a>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -183,7 +220,7 @@ export default function ApiDetailPage() {
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+              <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-teal-500/10 text-teal-400 border border-teal-500/20">
                 {API_DETAILS.category}
               </span>
               <span className="px-2 py-0.5 rounded text-xs font-mono bg-slate-800 text-slate-300 border border-slate-700/60">
@@ -214,7 +251,7 @@ export default function ApiDetailPage() {
               </div>
               <div>
                 <div className="text-xs text-slate-400">SLA Uptime</div>
-                <div className="text-base font-bold text-indigo-400 mt-0.5">{API_DETAILS.uptime}</div>
+                <div className="text-base font-bold text-teal-400 mt-0.5">{API_DETAILS.uptime}</div>
               </div>
             </div>
 
@@ -229,7 +266,7 @@ export default function ApiDetailPage() {
               </span>
             </div>
 
-            <button className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-xl text-xs transition-all shadow-lg shadow-indigo-600/20">
+            <button className="w-full bg-teal-600 hover:bg-teal-500 text-white font-semibold py-2.5 rounded-xl text-xs transition-all shadow-lg shadow-teal-600/20">
               Subscribe to API
             </button>
           </div>
@@ -252,7 +289,7 @@ export default function ApiDetailPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`py-4 flex items-center gap-2 border-b-2 transition-all ${
                   isActive 
-                    ? 'border-indigo-500 text-indigo-400' 
+                    ? 'border-teal-500 text-teal-400' 
                     : 'border-transparent text-slate-400 hover:text-slate-200'
                 }`}
               >
@@ -277,7 +314,7 @@ export default function ApiDetailPage() {
                 <h2 className="text-lg font-bold text-white">Key Capabilities</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-1.5">
-                    <div className="text-indigo-400 font-semibold text-xs flex items-center gap-2">
+                    <div className="text-teal-400 font-semibold text-xs flex items-center gap-2">
                       <Zap className="h-4 w-4" /> Instant Tokenization
                     </div>
                     <p className="text-xs text-slate-400 leading-relaxed">
@@ -316,15 +353,15 @@ export default function ApiDetailPage() {
                 <h2 className="text-base font-bold text-white">Integration Quickstart</h2>
                 <div className="space-y-3 text-xs text-slate-300">
                   <div className="flex items-start gap-3">
-                    <span className="bg-indigo-600 text-white font-bold h-5 w-5 rounded-full flex items-center justify-center text-[10px] shrink-0 mt-0.5">1</span>
+                    <span className="bg-teal-600 text-white font-bold h-5 w-5 rounded-full flex items-center justify-center text-[10px] shrink-0 mt-0.5">1</span>
                     <p><strong className="text-white">Get your API Key:</strong> Subscribe to a plan to receive your secret Bearer token.</p>
                   </div>
                   <div className="flex items-start gap-3">
-                    <span className="bg-indigo-600 text-white font-bold h-5 w-5 rounded-full flex items-center justify-center text-[10px] shrink-0 mt-0.5">2</span>
-                    <p><strong className="text-white">Configure HTTP Headers:</strong> Attach <code className="bg-slate-950 px-1.5 py-0.5 rounded text-indigo-300 font-mono">Authorization: Bearer YOUR_KEY</code> to all requests.</p>
+                    <span className="bg-teal-600 text-white font-bold h-5 w-5 rounded-full flex items-center justify-center text-[10px] shrink-0 mt-0.5">2</span>
+                    <p><strong className="text-white">Configure HTTP Headers:</strong> Attach <code className="bg-slate-950 px-1.5 py-0.5 rounded text-teal-300 font-mono">Authorization: Bearer YOUR_KEY</code> to all requests.</p>
                   </div>
                   <div className="flex items-start gap-3">
-                    <span className="bg-indigo-600 text-white font-bold h-5 w-5 rounded-full flex items-center justify-center text-[10px] shrink-0 mt-0.5">3</span>
+                    <span className="bg-teal-600 text-white font-bold h-5 w-5 rounded-full flex items-center justify-center text-[10px] shrink-0 mt-0.5">3</span>
                     <p><strong className="text-white">Test Endpoints:</strong> Use the interactive API reference tab to run live mock calls.</p>
                   </div>
                 </div>
@@ -370,7 +407,7 @@ export default function ApiDetailPage() {
                   const isSelected = selectedEndpoint.id === ep.id;
                   const methodColor = 
                     ep.method === 'GET' ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' :
-                    ep.method === 'POST' ? 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20' :
+                    ep.method === 'POST' ? 'text-teal-400 bg-teal-500/10 border-teal-500/20' :
                     'text-amber-400 bg-amber-500/10 border-amber-500/20';
 
                   return (
@@ -382,7 +419,7 @@ export default function ApiDetailPage() {
                       }}
                       className={`w-full p-3 rounded-xl border text-left transition-all ${
                         isSelected 
-                          ? 'bg-slate-900 border-indigo-500 shadow-md shadow-indigo-950/30' 
+                          ? 'bg-slate-900 border-teal-500 shadow-md shadow-teal-950/30' 
                           : 'bg-slate-900/40 border-slate-800 hover:bg-slate-900'
                       }`}
                     >
@@ -405,7 +442,7 @@ export default function ApiDetailPage() {
               {/* Endpoint Details */}
               <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-mono">
+                  <span className="text-xs font-bold px-2 py-0.5 rounded bg-teal-500/10 text-teal-400 border border-teal-500/20 font-mono">
                     {selectedEndpoint.method}
                   </span>
                   <span className="text-sm font-mono font-semibold text-white">{selectedEndpoint.path}</span>
@@ -428,7 +465,7 @@ export default function ApiDetailPage() {
                       <tbody className="divide-y divide-slate-800/60 text-slate-300">
                         {selectedEndpoint.params.map(p => (
                           <tr key={p.name}>
-                            <td className="p-2.5 font-mono text-indigo-300">{p.name}</td>
+                            <td className="p-2.5 font-mono text-teal-300">{p.name}</td>
                             <td className="p-2.5 font-mono text-slate-400">{p.type}</td>
                             <td className="p-2.5">
                               {p.required ? (
@@ -450,7 +487,7 @@ export default function ApiDetailPage() {
               <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
                 <div className="bg-slate-950 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Terminal className="h-4 w-4 text-indigo-400" />
+                    <Terminal className="h-4 w-4 text-teal-400" />
                     <span className="text-xs font-semibold text-slate-300">Request Playground</span>
                   </div>
 
@@ -461,7 +498,7 @@ export default function ApiDetailPage() {
                         onClick={() => setCodeLanguage(lang)}
                         className={`px-2.5 py-1 text-[10px] font-mono font-semibold uppercase rounded transition-all ${
                           codeLanguage === lang 
-                            ? 'bg-indigo-600 text-white' 
+                            ? 'bg-teal-600 text-white' 
                             : 'text-slate-400 hover:text-white'
                         }`}
                       >
@@ -471,7 +508,7 @@ export default function ApiDetailPage() {
                   </div>
                 </div>
 
-                <div className="relative p-4 bg-slate-950/90 font-mono text-xs text-indigo-300 overflow-x-auto">
+                <div className="relative p-4 bg-slate-950/90 font-mono text-xs text-teal-300 overflow-x-auto">
                   <button
                     onClick={handleCopyCode}
                     className="absolute top-3 right-3 bg-slate-800 hover:bg-slate-700 text-slate-300 p-2 rounded-lg transition-all border border-slate-700/50"
@@ -486,7 +523,7 @@ export default function ApiDetailPage() {
                   <button
                     onClick={handleRunRequest}
                     disabled={isTesting}
-                    className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-all shadow-md shadow-indigo-600/20"
+                    className="flex items-center gap-2 bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-all shadow-md shadow-teal-600/20"
                   >
                     <Play className="h-3.5 w-3.5 fill-current" />
                     {isTesting ? 'Sending...' : 'Test Request'}
@@ -529,12 +566,12 @@ export default function ApiDetailPage() {
                   key={plan.name}
                   className={`bg-slate-900/60 border rounded-2xl p-6 flex flex-col justify-between relative transition-all ${
                     plan.popular
-                      ? 'border-indigo-500 shadow-xl shadow-indigo-950/50 bg-slate-900'
+                      ? 'border-teal-500 shadow-xl shadow-teal-950/50 bg-slate-900'
                       : 'border-slate-800'
                   }`}
                 >
                   {plan.popular && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-md">
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-teal-600 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-md">
                       Most Popular
                     </span>
                   )}
@@ -545,7 +582,7 @@ export default function ApiDetailPage() {
                       <span className="text-3xl font-extrabold text-white">{plan.price}</span>
                       <span className="text-xs text-slate-400">{plan.period}</span>
                     </div>
-                    <div className="text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-md border border-indigo-500/20 w-fit">
+                    <div className="text-xs font-semibold text-teal-400 bg-teal-500/10 px-2.5 py-1 rounded-md border border-teal-500/20 w-fit">
                       {plan.requests}
                     </div>
 
@@ -561,7 +598,7 @@ export default function ApiDetailPage() {
 
                   <button className={`w-full mt-6 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                     plan.popular
-                      ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25'
+                      ? 'bg-teal-600 hover:bg-teal-500 text-white shadow-lg shadow-teal-600/25'
                       : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
                   }`}>
                     {plan.cta}

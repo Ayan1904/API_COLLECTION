@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaGithub } from 'react-icons/fa';
 import { 
   Code2, 
@@ -91,6 +91,20 @@ export default function ApiExplorerPage() {
   const [copied, setCopied] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [testResponse, setTestResponse] = useState(null);
+  const [mounted, setMounted] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    setMounted(true);
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }, []);
 
   // Handle API Selection Change
   const handleSelectApi = (api) => {
@@ -152,20 +166,43 @@ export default function ApiExplorerPage() {
       {/* Top Navbar */}
       <header className="h-16 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-40">
         <div className="flex items-center space-x-3">
-          <div className="bg-indigo-600 p-2 rounded-lg text-white">
+          <div className="bg-teal-600 p-2 rounded-lg text-white">
             <Code2 className="h-5 w-5" />
           </div>
           <span className="font-bold text-lg tracking-tight text-white">APIHub</span>
-          <span className="text-xs bg-slate-800 text-indigo-400 font-semibold px-2.5 py-0.5 rounded-full border border-slate-700">
+          <span className="text-xs bg-slate-800 text-teal-400 font-semibold px-2.5 py-0.5 rounded-full border border-slate-700">
             Explorer
           </span>
         </div>
 
         <div className="flex items-center space-x-4">
-          <a href="/login" className="text-xs text-slate-300 hover:text-white font-medium">Sign In</a>
-          <button className="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-3.5 py-2 rounded-lg transition-all shadow-md shadow-indigo-600/20">
-            Get API Key
-          </button>
+          {!mounted ? (
+            <div className="w-20 h-8" />
+          ) : user ? (
+            <div className="flex items-center space-x-3">
+              <span className="text-xs text-slate-300 font-medium bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
+                Logged in as <span className="text-teal-400 font-semibold">{user.fullName}</span>
+              </span>
+              <button
+                onClick={() => {
+                  localStorage.removeItem('token');
+                  localStorage.removeItem('user');
+                  setUser(null);
+                  window.location.reload();
+                }}
+                className="text-xs text-slate-400 hover:text-white border border-slate-800 hover:border-slate-700 px-3 py-1.5 rounded-lg transition-all cursor-pointer font-medium"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <>
+              <a href="/login" className="text-xs text-slate-300 hover:text-white font-medium">Sign In</a>
+              <a href="/signup" className="text-xs bg-teal-600 hover:bg-teal-500 text-white font-semibold px-4 py-2 rounded-lg transition-all shadow-lg shadow-teal-600/20">
+                Get Started
+              </a>
+            </>
+          )}
         </div>
       </header>
 
@@ -184,7 +221,7 @@ export default function ApiExplorerPage() {
                 placeholder="Search APIs by keyword..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
               />
             </div>
 
@@ -196,7 +233,7 @@ export default function ApiExplorerPage() {
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-3 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all ${
                     selectedCategory === cat 
-                      ? 'bg-indigo-600 text-white' 
+                      ? 'bg-teal-600 text-white' 
                       : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
                   }`}
                 >
@@ -216,7 +253,7 @@ export default function ApiExplorerPage() {
                   onClick={() => handleSelectApi(api)}
                   className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                     isSelected 
-                      ? 'bg-indigo-950/40 border-indigo-500/50 shadow-lg shadow-indigo-950/50' 
+                      ? 'bg-teal-950/40 border-teal-500/50 shadow-lg shadow-teal-950/50' 
                       : 'bg-slate-900/40 border-slate-800/80 hover:border-slate-700 hover:bg-slate-900'
                   }`}
                 >
@@ -225,7 +262,7 @@ export default function ApiExplorerPage() {
                       {api.name}
                       <span className="text-[10px] text-slate-400 font-normal">({api.version})</span>
                     </span>
-                    <span className="text-[10px] bg-slate-800 text-indigo-400 px-2 py-0.5 rounded font-medium border border-slate-700/50">
+                    <span className="text-[10px] bg-slate-800 text-teal-400 px-2 py-0.5 rounded font-medium border border-slate-700/50">
                       {api.category}
                     </span>
                   </div>
@@ -254,7 +291,7 @@ export default function ApiExplorerPage() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <h1 className="text-xl font-bold text-white">{selectedApi.name}</h1>
-                <span className="text-xs bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded font-mono">
+                <span className="text-xs bg-teal-500/10 text-teal-400 border border-teal-500/20 px-2 py-0.5 rounded font-mono">
                   {selectedApi.version}
                 </span>
               </div>
@@ -267,7 +304,7 @@ export default function ApiExplorerPage() {
                 Bearer Auth
               </span>
               <span className="inline-flex items-center gap-1.5 text-xs bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg text-slate-300">
-                <Clock className="h-4 w-4 text-indigo-400" />
+                <Clock className="h-4 w-4 text-teal-400" />
                 ~35ms
               </span>
             </div>
@@ -283,7 +320,7 @@ export default function ApiExplorerPage() {
                 const isEpSelected = selectedEndpoint.id === endpoint.id;
                 const methodColor = 
                   endpoint.method === 'GET' ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' :
-                  endpoint.method === 'POST' ? 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20' :
+                  endpoint.method === 'POST' ? 'text-teal-400 bg-teal-500/10 border-teal-500/20' :
                   'text-amber-400 bg-amber-500/10 border-amber-500/20';
 
                 return (
@@ -295,7 +332,7 @@ export default function ApiExplorerPage() {
                     }}
                     className={`p-2.5 rounded-xl border text-left flex flex-col justify-between transition-all ${
                       isEpSelected 
-                        ? 'bg-slate-900 border-indigo-500' 
+                        ? 'bg-slate-900 border-teal-500' 
                         : 'bg-slate-900/40 border-slate-800/80 hover:bg-slate-900'
                     }`}
                   >
@@ -318,7 +355,7 @@ export default function ApiExplorerPage() {
             {/* Code Header Bar */}
             <div className="bg-slate-950 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Terminal className="h-4 w-4 text-indigo-400" />
+                <Terminal className="h-4 w-4 text-teal-400" />
                 <span className="text-xs font-semibold text-slate-300">Request Snippet</span>
               </div>
 
@@ -330,7 +367,7 @@ export default function ApiExplorerPage() {
                     onClick={() => setActiveTab(lang)}
                     className={`px-2.5 py-1 text-[10px] font-mono font-semibold uppercase rounded transition-all ${
                       activeTab === lang 
-                        ? 'bg-indigo-600 text-white' 
+                        ? 'bg-teal-600 text-white' 
                         : 'text-slate-400 hover:text-white'
                     }`}
                   >
@@ -341,7 +378,7 @@ export default function ApiExplorerPage() {
             </div>
 
             {/* Code Block Container */}
-            <div className="relative p-4 bg-slate-950/80 font-mono text-xs text-indigo-300 overflow-x-auto">
+            <div className="relative p-4 bg-slate-950/80 font-mono text-xs text-teal-300 overflow-x-auto">
               <button
                 onClick={handleCopyCode}
                 className="absolute top-3 right-3 bg-slate-800/80 hover:bg-slate-700 text-slate-300 p-2 rounded-lg transition-all border border-slate-700/50"
@@ -362,7 +399,7 @@ export default function ApiExplorerPage() {
               <button
                 onClick={handleRunTest}
                 disabled={isTesting}
-                className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-all shadow-md shadow-indigo-600/20"
+                className="flex items-center gap-2 bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-xs font-semibold transition-all shadow-md shadow-teal-600/20"
               >
                 <Play className="h-3.5 w-3.5 fill-current" />
                 {isTesting ? 'Executing...' : 'Run Request'}
