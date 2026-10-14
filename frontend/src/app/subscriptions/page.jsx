@@ -40,7 +40,7 @@ export default function SubscriptionsPage() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch('http://localhost:5000/api/subscriptions', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/subscriptions`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

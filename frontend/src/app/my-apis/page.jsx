@@ -57,7 +57,7 @@ export default function MyApisPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('http://localhost:5000/api/products/my-listings', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/my-listings`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -264,11 +264,10 @@ export default function MyApisPage() {
               return (
                 <div
                   key={api._id}
-                  className={`bg-slate-900/60 border rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all ${
-                    isInactive
+                  className={`bg-slate-900/60 border rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all ${isInactive
                       ? 'border-slate-800 opacity-60 bg-slate-950/20'
                       : 'border-slate-800/80 hover:border-slate-700/80 hover:bg-slate-900/80'
-                  }`}
+                    }`}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
@@ -321,11 +320,10 @@ export default function MyApisPage() {
                       </button>
                       <button
                         onClick={() => handleToggleActive(api._id, api.isActive)}
-                        className={`p-2.5 rounded-xl border transition-all ${
-                          isInactive
+                        className={`p-2.5 rounded-xl border transition-all ${isInactive
                             ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border-emerald-500/20'
                             : 'bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border-rose-500/20'
-                        }`}
+                          }`}
                         title={isInactive ? 'Reactivate listing' : 'Deactivate listing'}
                       >
                         {isInactive ? <RefreshCw className="h-4 w-4" /> : <Trash2 className="h-4 w-4" />}

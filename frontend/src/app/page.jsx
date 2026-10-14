@@ -9,7 +9,7 @@ import {
   ArrowRight, 
   Terminal, 
   Star, 
-  TrendingUp, 
+  TrendingUp,
   Lock,
   Plus
 } from 'lucide-react';
