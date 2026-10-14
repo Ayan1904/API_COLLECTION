@@ -27,6 +27,7 @@ app.use(
     origin: [
       'http://localhost:3000', // Next.js frontend dev server
       'http://localhost:3001',
+      'https://api-collection-git-master-ayans-projects-2b67c7ab.vercel.app'
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
